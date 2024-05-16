@@ -10,8 +10,7 @@ contract TheUnchartedIslands is ERC721Enumerable, Ownable {
     mapping(address => uint256) public mintCount;
     mapping(address => uint256) public _nonces;
 
-    address public signerAddress =
-        address(0x23782b865C27b04d94450f7144442F7481159B4A);
+    address public signerAddress;
     uint256 public maxMintSupply = 10000;
 
     string public baseTokenURI;

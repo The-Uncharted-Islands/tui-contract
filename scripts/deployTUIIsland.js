@@ -13,13 +13,13 @@ async function main() {
   // ethers is available in the global scope
   const [deployer] = await ethers.getSigners();
   console.log(
-    "Deploying the UnchartedLandsXSpirits contracts with the account:",
+    "Deploying the TheUnchartedIslands contracts with the account:",
     await deployer.getAddress()
   );
 
   // console.log("Account balance:", (await deployer.getBalance()).toString());
 
-  const contractName = "UnchartedLandsXSpirits";
+  const contractName = "TheUnchartedIslands";
 
   const contract = await ethers.deployContract(contractName);
 

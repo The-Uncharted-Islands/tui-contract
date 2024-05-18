@@ -2,9 +2,9 @@
 pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts/access/Ownable2Step.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract TUI is ERC20, Ownable2Step {
+contract TUI is ERC20, Ownable {
     mapping(address => bool) public _blackList;
 
     uint256 public constant MAX_SUPPLY = 4000000000 * 10 ** 18;
@@ -13,7 +13,10 @@ contract TUI is ERC20, Ownable2Step {
 
     error ZeroAddressCannotBlacklisted();
 
-    constructor(address owner) ERC20("TheUnchartedIslands", "TUI") {
+    constructor() ERC20("TheUnchartedIslands", "TUI") {
+    }
+
+    function mintTo(address owner) public onlyOwner{
         _mint(owner, MAX_SUPPLY);
     }
 

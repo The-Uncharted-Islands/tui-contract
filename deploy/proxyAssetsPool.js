@@ -12,7 +12,7 @@ async function main() {
 
   console.log("Account balance:", balance);
 
-  const operator = ethers.getAddress('0x')
+  const operator = ethers.getAddress('')
   const contractName = "AssetsPool";
 
   const contractFactory = await ethers.getContractFactory(contractName)

@@ -1,35 +1,36 @@
 //SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.20;
 
-import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721ReceiverUpgradeable.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 
-import "@openzeppelin/contracts-upgradeable/access/Ownable2StepUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
-import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/cryptography/ECDSAUpgradeable.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "@openzeppelin/contracts/utils/Address.sol";
+import "@openzeppelin/contracts/security/Pausable.sol";
+import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+
 
 contract TUILPStake is
-    Ownable2StepUpgradeable,
-    IERC721ReceiverUpgradeable,
-    ReentrancyGuardUpgradeable,
-    PausableUpgradeable
+    Ownable,
+    IERC721Receiver,
+    ReentrancyGuard,
+    Pausable
 {
     struct RewardSet {
         uint256 tuiPerSec;
         uint256 startTime;
     }
-    using SafeMathUpgradeable for uint256;
-    using AddressUpgradeable for address;
-    using ECDSAUpgradeable for bytes32;
+    using SafeMath for uint256;
+    using Address for address;
+    using ECDSA for bytes32;
 
-    IERC20Upgradeable public lpToken;
+    IERC20 public lpToken;
     mapping(address => uint256) public stakeTUILPs;
-    IERC20Upgradeable public tuiToken;
+    IERC20 public tuiToken;
     mapping(address => uint256) public userRewardUpdateTime;
     mapping(address => uint256) public userClaimTime;
     mapping(address => uint256) public userUnClaimReward;
@@ -39,11 +40,6 @@ contract TUILPStake is
     event Unstake(address indexed user, uint256 amount);
     event Claim(address indexed user, uint256 amount);
 
-    function initialize() public initializer {
-        __Ownable_init();
-        __Pausable_init();
-        // addOperator(msg.sender);
-    }
 
     function stake(uint256 amount) external nonReentrant whenNotPaused {
         require(amount != 0, "amount error");
@@ -94,8 +90,8 @@ contract TUILPStake is
     }
 
     function setToken(address lp, address tui) external onlyOwner {
-        lpToken = IERC20Upgradeable(lp);
-        tuiToken = IERC20Upgradeable(tui);
+        lpToken = IERC20(lp);
+        tuiToken = IERC20(tui);
     }
 
     function set1LPTuiRewardPerDay(uint256 perDay) external onlyOwner {
@@ -182,11 +178,11 @@ contract TUILPStake is
     }
 
     function rescueToken(address address_, uint256 amount) public onlyOwner {
-        IERC20Upgradeable(address_).transfer(msg.sender, amount);
+        IERC20(address_).transfer(msg.sender, amount);
     }
 
     function rescueNFT(address address_, uint256 tokenId) public onlyOwner {
-        IERC721Upgradeable(address_).safeTransferFrom(
+        IERC721(address_).safeTransferFrom(
             address(this),
             msg.sender,
             tokenId
@@ -199,6 +195,6 @@ contract TUILPStake is
         uint256,
         bytes calldata
     ) external pure override returns (bytes4) {
-        return IERC721ReceiverUpgradeable.onERC721Received.selector;
+        return IERC721Receiver.onERC721Received.selector;
     }
 }

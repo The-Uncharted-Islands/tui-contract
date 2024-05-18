@@ -55,7 +55,7 @@ contract TheUnchartedIslands is ERC721Enumerable, Ownable {
     function tokenURI(
         uint256 tokenId
     ) public view override returns (string memory) {
-        _requireMinted(tokenId);
+        // _requireMinted(tokenId);
 
         return
             bytes(baseTokenURI).length > 0

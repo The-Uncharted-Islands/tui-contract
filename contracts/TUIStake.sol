@@ -42,9 +42,7 @@ contract TUIStake is Ownable, IERC721Receiver {
         uint256 rewardPerHour
     );
 
-    constructor(address tokenAddress, address nftAddress) {
-        token = IERC20(tokenAddress); // the stake token
-        nft = IERC721(nftAddress); // the stake nft
+    constructor() {
     }
 
     function stake(uint256 poolId, uint256 amount) external {

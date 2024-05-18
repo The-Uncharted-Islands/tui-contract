@@ -1,25 +1,27 @@
 //SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.20;
 
-import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721ReceiverUpgradeable.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 
-import "@openzeppelin/contracts-upgradeable/access/Ownable2StepUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
-import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/cryptography/ECDSAUpgradeable.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "@openzeppelin/contracts/utils/Address.sol";
+import "@openzeppelin/contracts/security/Pausable.sol";
+import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+
 
 contract AssetsPool is
-    Ownable2StepUpgradeable,
-    IERC721ReceiverUpgradeable,
-    ReentrancyGuardUpgradeable
+    Ownable,
+    IERC721Receiver,
+    ReentrancyGuard
 {
-    using SafeMathUpgradeable for uint256;
-    using AddressUpgradeable for address;
-    using ECDSAUpgradeable for bytes32;
+    using SafeMath for uint256;
+    using Address for address;
+    using ECDSA for bytes32;
 
     mapping(address => bool) public operators;
 
@@ -49,11 +51,6 @@ contract AssetsPool is
         _;
     }
 
-    function initialize() public initializer {
-        __Ownable_init();
-        addOperator(msg.sender);
-    }
-
     function depositToken(
         address tokenAddress,
         uint256 amount
@@ -61,7 +58,7 @@ contract AssetsPool is
         require(amount != 0, "amount error");
         require(tokenAddress != address(0), "token error");
 
-        IERC20Upgradeable token = IERC20Upgradeable(tokenAddress);
+        IERC20 token = IERC20(tokenAddress);
 
         lockTokens[msg.sender][tokenAddress] =
             lockTokens[msg.sender][tokenAddress] +
@@ -79,7 +76,7 @@ contract AssetsPool is
         require(amount != 0, "amount error");
         require(tokenAddress != address(0), "token error");
         require(user != address(0), "user error");
-        IERC20Upgradeable token = IERC20Upgradeable(tokenAddress);
+        IERC20 token = IERC20(tokenAddress);
         require(token.balanceOf(address(this)) >= amount, "balance error");
 
         // lockTokens[msg.sender][tokenAddress] = lockTokens[msg.sender][tokenAddress] - amount;
@@ -150,7 +147,7 @@ contract AssetsPool is
         require(tokenIds.length != 0, "length error");
         require(nftAddress != address(0), "nft error");
         uint256 tokenId;
-        IERC721Upgradeable nft = IERC721Upgradeable(nftAddress);
+        IERC721 nft = IERC721(nftAddress);
         for (uint256 i = 0; i < tokenIds.length; i++) {
             tokenId = tokenIds[i];
             nft.safeTransferFrom(msg.sender, address(this), tokenId);
@@ -166,7 +163,7 @@ contract AssetsPool is
         require(tokenIds.length != 0, "length error");
 
         require(nftAddress != address(0), "nft error");
-        IERC721Upgradeable nft = IERC721Upgradeable(nftAddress);
+        IERC721 nft = IERC721(nftAddress);
 
         uint256 tokenId;
 
@@ -215,11 +212,11 @@ contract AssetsPool is
     }
 
     function rescueToken(address address_, uint256 amount) public onlyOwner {
-        IERC20Upgradeable(address_).transfer(msg.sender, amount);
+        IERC20(address_).transfer(msg.sender, amount);
     }
 
     function rescueNFT(address address_, uint256 tokenId) public onlyOwner {
-        IERC721Upgradeable(address_).safeTransferFrom(
+        IERC721(address_).safeTransferFrom(
             address(this),
             msg.sender,
             tokenId
@@ -266,6 +263,6 @@ contract AssetsPool is
         uint256,
         bytes calldata
     ) external pure override returns (bytes4) {
-        return IERC721ReceiverUpgradeable.onERC721Received.selector;
+        return IERC721Receiver.onERC721Received.selector;
     }
 }

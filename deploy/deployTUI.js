@@ -20,7 +20,7 @@ async function main() {
   // console.log("Account balance:", (await deployer.getBalance()).toString());
 
   const contractName = "TUI";
-  const treasuryAddress = ethers.getAddress('0x')
+  const treasuryAddress = ethers.getAddress('')
 
   const contract = await ethers.deployContract(contractName, [treasuryAddress]);
 
